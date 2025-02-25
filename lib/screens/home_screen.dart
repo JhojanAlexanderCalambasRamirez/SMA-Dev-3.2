@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const VideoPlayerScreen()),
+              MaterialPageRoute(builder: (context) => VideoPlayerScreen()), // ✅ Eliminado const
             );
           },
           child: const Text("Ir a Reproductor de Video"),

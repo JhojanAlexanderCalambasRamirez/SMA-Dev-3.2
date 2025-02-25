@@ -1,54 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
 
   @override
-  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
+  VideoPlayerScreenState createState() => VideoPlayerScreenState();
 }
 
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
+class VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  late final Player player;
+  late final VideoController controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/video.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-      });
+    player = Player();
+    controller = VideoController(player);
+
+    _loadVideo();
+  }
+
+  Future<void> _loadVideo() async {
+    String path = "asset:///assets/videos/VideoEjemplo.mp4";
+    player.open(Media(path));
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    player.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Reproductor de Video")),
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : const CircularProgressIndicator(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _controller.value.isPlaying
-                ? _controller.pause()
-                : _controller.play();
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
+      appBar: AppBar(title: const Text("Reproducción de Video")),
+      body: Column(
+        children: [
+          Expanded(child: Video(controller: controller)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.replay_10),
+                onPressed: () => player.seek(
+                  Duration(seconds: player.state.position.inSeconds - 10),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.pause),
+                onPressed: () => player.pause(),
+              ),
+              IconButton(
+                icon: const Icon(Icons.play_arrow),
+                onPressed: () => player.play(),
+              ),
+              IconButton(
+                icon: const Icon(Icons.forward_10),
+                onPressed: () => player.seek(
+                  Duration(seconds: player.state.position.inSeconds + 10),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

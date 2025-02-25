@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart'; // ✅ Importación correcta
-
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
+import 'screens/video_player_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized(); // ✅ Inicializa correctamente media_kit
   runApp(const MyApp());
 }
 
@@ -12,18 +15,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('FFmpeg Test')),
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () async {
-              await FFmpegKit.execute("-version").then((session) async {
-                final logs = await session.getOutput();
-                print("FFmpeg Output: $logs");
-              });
-            },
-            child: const Text("Test FFmpeg"),
-          ),
+      debugShowCheckedModeBanner: false,
+      title: 'SMA 3.2 Developers',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("SMA 3.2 Developers")),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const VideoPlayerScreen()),
+            );
+          },
+          child: const Text("Ir a Reproductor de Video"),
         ),
       ),
     );
